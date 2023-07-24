@@ -13,11 +13,14 @@ module.exports.getUser = (req, res) => {
 
   User.findById(userId)
     .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Указанный _id не существует.' });
+      }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
+        res.status(400).send({ message: 'Пользователь по указанному _id не найден.' });
         return;
       }
       res.status(500).send({ message: 'Ошибка по умолчанию.' });

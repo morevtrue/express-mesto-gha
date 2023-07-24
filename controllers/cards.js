@@ -40,14 +40,15 @@ module.exports.likeCard = (req, res) => {
   const userId = req.user._id;
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true })
     .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
+        res.status(400).send({ message: 'Передан некорректный _id карточки.' });
       }
-      res.status(400).send({ message: ' Переданы некорректные данные для постановки лайка.' });
     });
 };
 
@@ -55,11 +56,14 @@ module.exports.dislikeCard = (req, res) => {
   const userId = req.user._id;
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true })
     .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(400).send({ message: 'Передан некорректный _id карточки.' });
         return;
       }
       res.status(500).send({ message: ' Переданы некорректные данные для снятия лайка.' });
