@@ -12,18 +12,18 @@ module.exports.getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
+    .orFail(new Error('NotValidId'))
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Указанный _id не существует.' });
-      }
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Указанный _id не существует.' });
+      } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Пользователь по указанному _id не найден.' });
-        return;
+      } else {
+        res.status(500).send({ message: 'Ошибка по умолчанию.' });
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 

@@ -24,18 +24,18 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
+    .orFail(new Error('NotValidId'))
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-      }
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Карточка с указанным _id не найдена.' });
-        return;
+      } else {
+        res.status(500).send({ message: 'Ошибка по умолчанию.' });
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -58,17 +58,15 @@ module.exports.likeCard = (req, res) => {
 module.exports.dislikeCard = (req, res) => {
   const userId = req.user._id;
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true })
+    .orFail(new Error('NotValidId'))
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-      }
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Передан некорректный _id карточки.' });
-        return;
-      }
-      res.status(500).send({ message: ' Переданы некорректные данные для снятия лайка.' });
+      } else { res.status(500).send({ message: 'Ошибка по умолчанию.' }); }
     });
 };
