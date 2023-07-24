@@ -19,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.use((req, res) => res.status(404).send({ message: 'неправильно указан путь' }));
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 

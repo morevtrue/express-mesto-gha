@@ -25,11 +25,14 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(400).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
       res.status(500).send({ message: 'Ошибка по умолчанию.' });
