@@ -50,10 +50,8 @@ module.exports.updateUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' && err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
-      } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Пользователь с указанным _id не найден.' });
       } else {
         res.status(500).send({ message: 'Ошибка по умолчанию.' });
       }
