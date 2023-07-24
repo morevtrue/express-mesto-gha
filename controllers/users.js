@@ -65,13 +65,10 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      } else {
+        res.status(500).send({ message: 'Ошибка по умолчанию.' });
       }
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
-        return;
-      }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
     });
 };
