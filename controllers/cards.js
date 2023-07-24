@@ -11,7 +11,7 @@ module.exports.createCard = (req, res) => {
   const userId = req.user._id;
 
   Card.create({ name, link, owner: userId })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'переданы некорректные данные в методы создания карточки' });
@@ -42,16 +42,16 @@ module.exports.deleteCard = (req, res) => {
 module.exports.likeCard = (req, res) => {
   const userId = req.user._id;
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true })
+    .orFail(new Error('NotValidId'))
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-      }
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Передан некорректный _id карточки.' });
-      }
+      } else { res.status(500).send({ message: 'Ошибка по умолчанию.' }); }
     });
 };
 
