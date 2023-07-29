@@ -35,6 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
   const userId = req.user._id;
 
   Card.findById(cardId)
+    .orFail(new Error('NotValidId'))
     .then((card) => {
       if (userId !== card.owner._id.toString()) {
         throw new Error('NotCurrentUser');
@@ -62,6 +63,9 @@ module.exports.deleteCard = (req, res, next) => {
       if (err.message === 'NotCurrentUser') {
         // res.status(403).send({ message: 'карточка не принадлежит пользователю' });
         next(new ForbiddenError('карточка не принадлежит пользователю'));
+      } else if (err.message === 'NotValidId') {
+        // res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         // res.status(500).send({ message: 'Ошибка по умолчанию.' });
         next(err);
@@ -71,6 +75,8 @@ module.exports.deleteCard = (req, res, next) => {
 
 module.exports.likeCard = (req, res, next) => {
   const userId = req.user._id;
+  console.log(req.params.cardId);
+  console.log(userId);
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true })
     .orFail(new Error('NotValidId'))
     .then((card) => {

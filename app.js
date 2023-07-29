@@ -54,6 +54,7 @@ app.use('/', require('./routes/cards'));
 // app.use((req, res) => res.status(404).send({ message: 'неправильно указан путь' }));
 
 app.use(errors());
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // console.log(err.statusCode);
   const { statusCode = 500, message } = err;
@@ -69,5 +70,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`app listening on port ${PORT}`);
 });
