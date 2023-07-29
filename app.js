@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-// const { NotFoundError, notFoundErr } = require('./errors/not-found-error');
+const { NotFoundError } = require('./errors/not-found-error');
 
 const regex = /^((http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/;
 
@@ -51,7 +51,7 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-// app.use((req, res) => res.status(404).send({ message: 'неправильно указан путь' }));
+app.use((req, res, next) => next(new NotFoundError('неправильно указан путь')));
 
 app.use(errors());
 // eslint-disable-next-line no-unused-vars
