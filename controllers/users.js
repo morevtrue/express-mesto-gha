@@ -4,24 +4,18 @@ const User = require('../models/user');
 
 const { NotFoundError } = require('../errors/not-found-error');
 const { BadRequestError } = require('../errors/bad-request-error');
-const { UnathorizedError } = require('../errors/unathorized-error');
 const { ConflictError } = require('../errors/conflict-error');
 
 function getUser(userId, res, next) {
   User.findById(userId)
-    .orFail(new Error('NotValidId'))
+    .orFail(() => new NotFoundError('Пользователь с указанным id не существует'))
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        // res.status(404).send({ message: 'Указанный _id не существует.' });
-        next(new NotFoundError('Указанный _id не существует.'));
-      } else if (err.name === 'CastError') {
-        // res.status(400).send({ message: 'Пользователь по указанному _id не найден.' });
+      if (err.name === 'CastError') {
         next(new BadRequestError('Пользователь по указанному _id не найден.'));
       } else {
-        // res.status(500).send({ message: 'Ошибка по умолчанию.' });
         next(err);
       }
     });
@@ -31,7 +25,6 @@ module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => {
-      // res.status(500).send({ message: 'Ошибка по умолчанию.' });
       next(err);
     });
 };
@@ -65,12 +58,8 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(new ConflictError('Такой пользователь уже существует'));
       } else if (err.name === 'ValidationError') {
-        // res.status(400).send({
-        //   message: 'Переданы некорректные данные при создании пользователя.',
-        // });
         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       } else {
-        // res.status(500).send({ message: 'Ошибка по умолчанию.' });
         next(err);
       }
     });
@@ -89,10 +78,7 @@ module.exports.login = (req, res, next) => {
         });
       res.send({ message: 'Авторизация прошла успешно!' });
     })
-    .catch((err) => {
-      // res.status(401).send({ message: err.message });
-      next(new UnathorizedError(`${err.message}`));
-    });
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -105,12 +91,8 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        // res.status(400).send({
-        //   message: 'Переданы некорректные данные при создании пользователя.',
-        // });
         next(BadRequestError('Переданы некорректные данные при создании пользователя.'));
       } else {
-        // res.status(500).send({ message: 'Ошибка по умолчанию.' });
         next(err);
       }
     });
@@ -124,12 +106,8 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        // res.status(400).send({
-        //   message: 'Переданы некорректные данные при создании пользователя.',
-        // });
         next(BadRequestError('Переданы некорректные данные при создании пользователя.'));
       } else {
-        // res.status(500).send({ message: 'Ошибка по умолчанию.' });
         next(err);
       }
     });
