@@ -10,7 +10,7 @@ router.get('/users', getUsers);
 router.get('/users/me', getCurrentUser);
 router.get('/users/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
+    userId: Joi.string().hex().length(24).required(),
   }),
 }), getUser);
 router.patch('/users/me', celebrate({
