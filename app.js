@@ -31,10 +31,13 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
+app.get('/signout', (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
+});
+
 app.use((req, res, next) => next(new NotFoundError('неправильно указан путь')));
 
 app.use(errors());
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   errorHandler(err, req, res, next);
   next();
