@@ -38,10 +38,7 @@ app.get('/signout', (req, res) => {
 app.use((req, res, next) => next(new NotFoundError('неправильно указан путь')));
 
 app.use(errors());
-app.use((err, req, res, next) => {
-  errorHandler(err, req, res, next);
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
