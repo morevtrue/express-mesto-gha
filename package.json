@@ -1,5 +1,5 @@
 {
-  "name": "express-mesto-gha",
+  "name": "express-mesto-gha-backend",
   "version": "1.0.0",
   "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)\r # Проект Mesto фронтенд + бэкенд",
   "main": "app.js",
@@ -17,7 +17,6 @@
   "bugs": {
     "url": "https://github.com/morevtrue/express-mesto-gha/issues"
   },
-  "homepage": "https://github.com/morevtrue/express-mesto-gha#readme",
   "devDependencies": {
     "eslint": "^8.45.0",
     "eslint-config-airbnb-base": "^15.0.0",
